@@ -1,0 +1,97 @@
+<p>
+    <a href="//lh5.ggpht.com/-dbqPcXQnpWU/U6QO7VF36zI/AAAAAAABc30/Au1XgYAwtcM/s1600-h/part2-step3-2-image001%25255B2%25255D.png"><img title="part2-step3-2-image001" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image001" src="//lh4.ggpht.com/-kTk1PMc9z8U/U6QO95ZoIhI/AAAAAAABc38/2Wo8hr_voOI/part2-step3-2-image001_thumb.png?imgmax=800" width="304" height="251" /></a>
+</p>
+<p>這一份教學主要說明<a href="http://pve.proxmox.com/wiki/Main_Page">Proxmox VE 3.2</a>安裝步驟。Proxmox VE的圖形化安裝介面操作可以讓人簡單地設定。</p>
+<p>In this article, I will describe how to install <a href="http://pve.proxmox.com/wiki/Main_Page">Proxmox VE 3.2</a>. It is very easy to install Proxmox VE via its friendly installation GUI.</p>
+<ul>
+    <li>對應講義：<b>PART-2-STEP-3-2</b> </li>
+    <li>主題：<b>安裝Proxmox VE 3 </b></li>
+</ul>
+<div class="blogger-post-hr">
+    <hr />
+</div>
+<h4>教學目錄 / Table of Contents</h4>
+<ol>
+    <li><a href="http://pulipuli.blogspot.tw/2014/06/proxmox-ve-32-proxmox-ve-installation.html">Proxmox VE 安裝前準備</a> </li>
+    <li><span style="font-weight: bold; color: red">[目前在此篇 &gt;&gt; ] </span><a href="http://pulipuli.blogspot.com/2014/06/proxmox-ve-3-install-proxmox-ve-3.html">安裝Proxmox VE 3.2</a> </li>
+    <li><a href="http://pulipuli.blogspot.com/2014/06/proxoxmox-ve-how-to-open-proxmox-ves.html">開啟Proxmox VE的網頁管理介面</a> </li>
+    <li><a href="http://pulipuli.blogspot.com/2014/06/proxmox-venfs-add-nfs-in-proxmox-ve.html">在Proxmox VE中加入NFS資料儲存伺服器</a> </li>
+    <li><a href="http://pulipuli.blogspot.com/2014/06/proxmox-ve-create-proxmox-ve-cluster.html">建立Proxmox VE集叢</a> </li>
+    <li><a href="http://pulipuli.blogspot.com/2014/06/proxmox-ve-join-to-proxmox-ve-cluster.html">加入Proxmox VE集叢</a> </li>
+</ol>
+<div class="blogger-post-hr">
+    <hr />
+</div>
+<h4>DLLL-CIAS中虛擬機器管理伺服器的網路設定 / Virtual Machine Hypervisior Server’s Network Configuration in DLLL-CIAS</h4>
+<p>
+    <a href="//lh3.ggpht.com/-4Yn7pJB6wJw/U6KfaNgsxPI/AAAAAAABchs/N7eFWyb1sU0/s1600-h/image%25255B2%25255D.png"><img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; margin: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="//lh3.ggpht.com/-aw4rz6vmKvg/U6KfbxNZSHI/AAAAAAABch0/Z0eJoIW8WK4/image_thumb.png" width="304" height="229" original="//lh3.ggpht.com/-aw4rz6vmKvg/U6KfbxNZSHI/AAAAAAABch0/Z0eJoIW8WK4/image_thumb.png" /></a>
+</p>
+<p>DLLL-CIAS雲端平台的網路架構請參考上圖。其中虛擬機器管理伺服器位於區域網路中的一台伺服器，可以建置多台。在本教學中預定會建置兩台，這台都會經過一樣的安裝步驟，唯有網路設定的IP位址不同。而第一台#1 需要建立Proxmox VE集叢(Cluster)、第二台之後則需要加入Proxmox VE集叢。</p>
+<p>每一台虛擬機器管理伺服器的網路設定都不一樣，以下以第一台 #1 為例，設定規則如下：</p>
+<ul>
+    <li>IP位址：<u>10.1.0.<strong>1</strong></u> (第一台就是1，第二台就是2，依此類推)</li>
+    <li>NETMASK 子網路遮罩： <u>255.0.0.0</u></li>
+    <li>DNS：<u>10.0.0.254</u></li>
+</ul>
+<p>以下將以安裝第一台#1為例子的設定，來介紹Proxmox VE的安裝過程。</p>
+<h4>Proxmox VE安裝 / Proxmox VE Installation</h4>
+<ol>
+    <li>放入Proxmox VE光碟，進入光碟安裝程序。此時按Enter鍵進入安裝程序。
+        <br />
+        <a href="//lh4.ggpht.com/-6YJ6BV1T6ZM/U6QO-2IQxHI/AAAAAAABc4E/log_HJdR3I0/s1600-h/part2-step3-2-image001%25255B6%25255D.png"><img title="part2-step3-2-image001" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image001" src="//lh4.ggpht.com/-0Zsa6MGu4sI/U6QPAA07SSI/AAAAAAABc4M/rFUJUktaJqQ/part2-step3-2-image001_thumb%25255B1%25255D.png?imgmax=800" width="304" height="251" /></a>
+    </li>
+    <li>授權條款說明，按「<u>I agree</u>」。
+        <br />
+        <a href="//lh3.ggpht.com/-SRfs88SG-OI/U6QPBQ_9dEI/AAAAAAABc4U/lq9gEHGzlL8/s1600-h/part2-step3-2-image002%25255B2%25255D.png"><img title="part2-step3-2-image002" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image002" src="//lh3.ggpht.com/-7QFW5SgI4hY/U6QPEK9ujeI/AAAAAAABc4c/z2Q-cvmW22g/part2-step3-2-image002_thumb.png?imgmax=800" width="304" height="231" /></a>
+    </li>
+    <li>Proxmox VE說明頁面，按「<u>Next</u>」下一步。
+        <br />
+        <a href="//lh3.ggpht.com/--OeJd6s96o4/U6QPFEAyUaI/AAAAAAABc4k/5eJVBz8N4wc/s1600-h/part2-step3-2-image003%25255B2%25255D.png"><img title="part2-step3-2-image003" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image003" src="//lh3.ggpht.com/-HCASOWrNGRA/U6QPGni0guI/AAAAAAABc4s/HtsmyfdO1aM/part2-step3-2-image003_thumb.png?imgmax=800" width="304" height="230" /></a>
+    </li>
+    <li>鍵盤配置，輸入設定如下：
+        <br />&#160;&#160;&#160; - Country: <u>taiwan</u>
+        <br />&#160;&#160;&#160; - Time zone: <u>Asia/taipei</u>
+        <br />&#160;&#160;&#160; - Keyboard Layout: <u>U.S.English</u>
+        <br />輸入完後，按「<u>Next</u>」進入下一步。
+        <br />
+        <a href="//lh4.ggpht.com/-SsdZBnfNRuQ/U6QPHvLhBpI/AAAAAAABc40/_8aeK0e8-Pk/s1600-h/part2-step3-2-image004%25255B2%25255D.png"><img title="part2-step3-2-image004" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image004" src="//lh3.ggpht.com/-CqMy7rL7jgQ/U6QPI8UbstI/AAAAAAABc48/Tu3OpH6yk34/part2-step3-2-image004_thumb.png?imgmax=800" width="304" height="230" /></a>
+    </li>
+    <li>接著輸入密碼與信箱資料，信箱是讓系統通知時寄送通知管理者時使用。本教學使用的預設密碼是「dlll@nccu」，範例如下：
+        <br />&#160;&#160;&#160; - Password: <u>dlll@nccu</u>
+        <br />&#160;&#160;&#160; - Confirm: <u>dlll@nccu</u>
+        <br />&#160;&#160;&#160; - E-mail: <u>example@nccu.edu.tw</u>
+        <br />輸入所有資料完畢後，按「<u>Next</u>」進入下一步。
+        <br />
+        <a href="//lh3.ggpht.com/-y2Bg7_3lujE/U6QPKDx-V7I/AAAAAAABc5E/HhCtAVL2gHE/s1600-h/part2-step3-2-image005%25255B2%25255D.png"><img title="part2-step3-2-image005" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image005" src="//lh3.ggpht.com/-vS0QE250eWw/U6QPMpuwVNI/AAAAAAABc5M/doCqkrLd3F0/part2-step3-2-image005_thumb.png?imgmax=800" width="304" height="228" /></a>
+    </li>
+    <li>設定連線資訊，網址名稱「Hostname (FQDN)」必須輸入完整的網址。本教學預設使用proxmox-01.dlll.nccu.edu.tw，此網址若沒真的註冊也能使用，僅供識別機器之用。範例如下：
+        <br />- Hostname (FQDN): <u>proxmox-01.dlll.nccu.edu.tw</u>
+        <br />- IP Address: <u>10.1.0.1</u>
+        <br />- Netmask: <u>255.0.0.0</u>
+        <br />- Gateway: <u>10.0.0.254 </u>
+        <br />- DNS: <u>10.0.0.254</u>
+        <br />請確實輸入正確，不然之後很難修改。輸入完畢後按「<u>Next</u>」下一步。
+        <br />
+        <a href="//lh5.ggpht.com/-1EgPLtxOTn4/U6QPNxRadGI/AAAAAAABc5U/gXRrT9oV7wY/s1600-h/part2-step3-2-image006%25255B2%25255D.png"><img title="part2-step3-2-image006" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image006" src="//lh3.ggpht.com/-97w_fsN4V_0/U6QPPNQy33I/AAAAAAABc5c/MnbY9IjwFk0/part2-step3-2-image006_thumb.png?imgmax=800" width="304" height="227" /></a>
+    </li>
+    <li>等待安裝。
+        <br />
+        <a href="//lh5.ggpht.com/-jZ0ZWj4alu0/U6QPQBml-OI/AAAAAAABc5k/DFLGJFry68k/s1600-h/part2-step3-2-image007%25255B2%25255D.png"><img title="part2-step3-2-image007" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image007" src="//lh4.ggpht.com/-3zVUvIA6BI0/U6QPRXZi0PI/AAAAAAABc5s/_mhejHnqJus/part2-step3-2-image007_thumb.png?imgmax=800" width="304" height="229" /></a>
+    </li>
+    <li>安裝完成，按下右下角的<u>Reboot</u>鍵重新開機。
+        <br />
+        <a href="//lh5.ggpht.com/-_AyajLMrp9o/U6QPSq6GuBI/AAAAAAABc50/TdeN6um7dpM/s1600-h/image%25255B2%25255D.png"><img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; margin: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="//lh4.ggpht.com/-bRE8WwHK0Kw/U6QPVDd_JOI/AAAAAAABc58/hyB86gIfueA/image_thumb.png?imgmax=800" width="304" height="230" /></a>
+    </li>
+    <li>重新開機的時候記得取出光碟。 </li>
+    <li>重開機之後進入Proxmox VE的指令管理介面，至此算是安裝完成。
+        <br />
+        <a href="//lh5.ggpht.com/-GPs0WVV490o/U6QPWZ6TlOI/AAAAAAABc6E/uV_lEsBna5U/s1600-h/part2-step3-2-image009%25255B2%25255D.png"><img title="part2-step3-2-image009" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="part2-step3-2-image009" src="//lh5.ggpht.com/-ZQqxcMUVqr4/U6QPXnKqt6I/AAAAAAABc6M/8WHB1Rx2MDY/part2-step3-2-image009_thumb.png?imgmax=800" width="304" height="191" /></a>
+        <br />
+    </li>
+</ol>
+<div class="blogger-post-hr">
+    <hr />
+</div> <font size="3"></font>
+<h4>下一篇：開啟Proxmox VE的網頁管理介面 / Next: Open Proxmox VE Web-base Management</h4>
+<p>安裝好Proxmox VE之後，接下來我們必須開啟網頁管理介面，請看下一篇的說明。</p>
+<p align="left">下一篇：「<a href="http://pulipuli.blogspot.com/2014/06/proxoxmox-ve-how-to-open-proxmox-ves.html">開啟Proxmox VE的網頁管理介面</a> 」。</p>
