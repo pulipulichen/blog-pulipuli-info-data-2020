@@ -1,1 +1,3 @@
-"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --app=http://localhost:8383/blog-pulipuli-info-data-2020/04/20200428-popup-center/index.html --window-size="1024,728" --window-position="0,0" --user-data-dir="D:/Test/Chrome-Profiles/1"
+# Clipboard測試
+
+google-chrome-samples/async-clipboard
