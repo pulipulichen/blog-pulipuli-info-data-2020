@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Search terms in a sentence by a word</title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <pre id="output"></pre>
+    
+    <script>
+      let sentence = "清晨很想去游一下，到了游泳池，才發現沒帶泳褲。"
+      let anchorPosition = 12 // 泳
+      
+      let dictTerms = [
+        "晨泳",
+        "游泳",
+        "游泳池",
+        "泳池游",
+        "泳池",
+        "泳褲",
+        "泳客"
+      ]
+      
+      function buildInvertedIndex(sentence) {
+        let index = {}
+        sentence.split('').forEach((word, i) => {
+          if (Array.isArray(index[word]) === false) {
+            index[word] = []
+          }
+          index[word].push(i)
+        })
+        
+        return index
+      }
+      
+      function buildTermsTable(terms) {
+        let table = []
+        for (let i = 0; i < terms.length; i++) {
+          let term = terms[i]
+          table.push({
+            term: term
+          })
+        }
+        return table
+      }
+      
+      function filterByOccurs(sentenceIndex, anchorPosition, term) {
+        let matchedAnchorPosition = false
+        
+        let wordsInTerm = term.split("")
+        let positions = []
+        for (let i = 0; i < wordsInTerm.length; i++) {
+          let word = wordsInTerm[i]
+          
+          if (!sentenceIndex[word]) {
+            // 一旦有一個字沒有找到，那就表示這個詞彙不是我們要的詞彙
+            return false
+          }
+          
+          let wordPositionsInSentence = sentenceIndex[word]
+          
+          if (wordPositionsInSentence.indexOf(anchorPosition) > -1) {
+            matchedAnchorPosition = true
+          }
+          positions = positions.concat(wordPositionsInSentence)
+        }
+        
+        if (matchedAnchorPosition === false) {
+          // 表示找到的詞彙跟現在要查詢的字無關
+          return false
+        }
+        
+        if (positions.length === 0) {
+          // 表示都沒找到
+          return false
+        }
+        return positions
+      }
+      
+      function filterBySequence(anchorPosition, termLength, positions) {
+        positions.sort()
+        
+        let positionSequence = []
+        let matchedAnchorPosition = false
+        for (let i = 0; i < positions.length; i++) {
+          let position = positions[i]
+          if (position === anchorPosition) {
+            matchedAnchorPosition = true
+          }
+          
+          if (i === 0) {
+            positionSequence.push(position)
+            continue
+          }
+          
+          let lastPosition = positions[(i-1)]
+          if (position - lastPosition === 1) {
+            // 表示是連續字數
+            positionSequence.push(position)
+            
+            if (positionSequence.length === termLength
+                    && matchedAnchorPosition === true) {
+              // 符合現在要查詢的詞彙
+              return positionSequence
+            }
+          }
+          else {
+            positionSequence = [position]
+            
+            if (matchedAnchorPosition === true) {
+              return false
+            }
+          }
+        }
+        
+        return false
+      }
+      
+      function filterTermSequence(sentence, positionSequence, term) {
+        let wordList = []
+        for (let i = 0; i < positionSequence.length; i++) {
+          let position = positionSequence[i]
+          wordList.push(sentence.substr(position, 1))
+        }
+        let word = wordList.join('')
+        return (word === term)
+      }
+      
+      function sortTerms(termsTable, anchorPosition) {
+        termsTable.sort((a, b) => {
+          let termLengthA = a.term.length
+          let termLengthB = b.term.length
+          if (termLengthA !== termLengthB) {
+            return (b.term.length - a.term.length)
+          }
+          else {
+            let anchorPositionInA = a.positions.indexOf(anchorPosition)
+            let anchorPositionInB = b.positions.indexOf(anchorPosition)
+            return anchorPositionInA - anchorPositionInB
+          }
+        })
+        return termsTable
+      }
+      
+      function searchTermInSentence(sentence, anchorPosition, dictTerms) {
+        let sentenceIndex = buildInvertedIndex(sentence)
+        let termsTable = buildTermsTable(dictTerms)
+        
+        termsTable = termsTable.filter(item => {
+          let positions = filterByOccurs(sentenceIndex, anchorPosition, item.term)
+          if (positions === false) {
+            return false
+          }
+          item.positions = positions
+          return true
+        })
+        
+        termsTable = termsTable.filter(item => {
+          let termlegnth = item.term.length
+          let positionSequence = filterBySequence(anchorPosition, termlegnth, item.positions)
+          if (positionSequence === false) {
+            return false
+          }
+          item.positions = positionSequence
+          return true
+        })
+        
+        termsTable = termsTable.filter(item => {
+          if (filterTermSequence(sentence, item.positions, item.term) === false) {
+            return false
+          }
+          return true
+        })
+        
+        let sortedFilterTerms = sortTerms(termsTable, anchorPosition)
+        
+        document.getElementById('output').innerHTML = sortedFilterTerms.map(o => o.term).join('\n')
+      }
+      
+      // 開始執行
+      searchTermInSentence(sentence, anchorPosition, dictTerms)
+      
+    </script>
+  </body>
+</html>
