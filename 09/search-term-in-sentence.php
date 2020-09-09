@@ -134,7 +134,7 @@ function sortTerms($termsTable, $anchorPosition) {
   return $termsTable;
 }
 
-function main($sentence, $anchorPosition, $dictTerms) {
+function searchTermInSentence($sentence, $anchorPosition, $dictTerms) {
   $sentenceIndex = buildInvertedIndex($sentence);
   $termsTable = buildTermsTable($dictTerms);
 
@@ -186,4 +186,4 @@ function main($sentence, $anchorPosition, $dictTerms) {
 }
 
 // 開始執行
-main($sentence, $anchorPosition, $dictTerms);
+searchTermInSentence($sentence, $anchorPosition, $dictTerms);
