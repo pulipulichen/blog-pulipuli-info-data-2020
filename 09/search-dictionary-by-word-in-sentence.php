@@ -1,17 +1,5 @@
 <?php
 
-$sentence = "清晨很想去游一下，到了游泳池，才發現沒帶泳褲。";
-$anchorPosition = 12; // 泳
-
-$dictTerms = array(
-   "晨泳",
-   "游泳",
-   "游泳池",
-   "泳池游",
-   "泳池",
-   "泳褲",
-   "泳客"
-);
 
 function buildInvertedIndex($sentence) {
   $index = array();
@@ -30,7 +18,8 @@ function buildTermsTable($terms) {
   for ($i = 0; $i < count($terms); $i++) {
     $term = $terms[$i];
     $table[] = array(
-      "term" => $term
+      "term" => $term,
+      "positions" => array()
     );
   }
   return $table;
@@ -65,12 +54,13 @@ function filterByOccurs($sentenceIndex, $anchorPosition, $term) {
     // 表示都沒找到
     return false;
   }
+  sort($positions);
+
   return $positions;
 }
 
 function filterBySequence($anchorPosition, $termLength, $positions) {
-  sort($positions);
-
+  
   $positionSequence = array();
   $matchedAnchorPosition = false;
   
@@ -134,10 +124,12 @@ function sortTerms($termsTable, $anchorPosition) {
   return $termsTable;
 }
 
-function searchTermInSentence($sentence, $anchorPosition, $dictTerms) {
-  $sentenceIndex = buildInvertedIndex($sentence);
-  $termsTable = buildTermsTable($dictTerms);
+function searchDictionaryByWordInSentence($sentence, $anchorPosition, $dictTerms) {
+  //轉換輸入資料的格式
+  $sentenceIndex = buildInvertedIndex($sentence); // 將句子轉換成反向索引典
+  $termsTable = buildTermsTable($dictTerms); // 將詞彙轉換成二維詞彙表格
 
+  // 詞彙的每個字都得要出現在句子中
   $tempTermsTable = array();
   for ($i = 0; $i < count($termsTable); $i++) {
     $item = $termsTable[$i];
@@ -152,6 +144,7 @@ function searchTermInSentence($sentence, $anchorPosition, $dictTerms) {
   }
   $termsTable = $tempTermsTable;
 
+  // 詞彙每個字在句子中的位置，必須是連續出現
   $tempTermsTable = array();
   for ($i = 0; $i < count($termsTable); $i++) {
     $item = $termsTable[$i];
@@ -166,6 +159,7 @@ function searchTermInSentence($sentence, $anchorPosition, $dictTerms) {
   }
   $termsTable = $tempTermsTable;
 
+  // 詞彙每個字在句子中的連續位置所組成的字，必須和詞彙相同
   $tempTermsTable = array();
   for ($i = 0; $i < count($termsTable); $i++) {
     $item = $termsTable[$i];
@@ -177,13 +171,34 @@ function searchTermInSentence($sentence, $anchorPosition, $dictTerms) {
   }
   $termsTable = $tempTermsTable;
 
+  // 詞彙排序
   $sortedFilterTerms = sortTerms($termsTable, $anchorPosition);
-  $sortedFilterTerms = array_map(function ($item) {
+  
+  $outputTerms = array_map(function ($item) {
     return $item["term"];
   }, $sortedFilterTerms);
   
-  print_r($sortedFilterTerms);
+  return $outputTerms;
 }
 
+// ---------------------
+// 輸入資料
+
+$sentence = "清晨很想去游一下，到了游泳池，才發現沒帶泳褲。";
+$anchorPosition = 12; // 泳
+
+$dictTerms = array(
+   "晨泳",
+   "游泳",
+   "游泳池",
+   "泳池游",
+   "泳池",
+   "泳褲",
+   "泳客"
+);
+
 // 開始執行
-searchTermInSentence($sentence, $anchorPosition, $dictTerms);
+$sortedFilterTerms = searchDictionaryByWordInSentence($sentence, $anchorPosition, $dictTerms);
+
+// 輸出結果
+print_r($sortedFilterTerms);

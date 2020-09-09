@@ -8,19 +8,6 @@
     <pre id="output"></pre>
     
     <script>
-      let sentence = "清晨很想去游一下，到了游泳池，才發現沒帶泳褲。"
-      let anchorPosition = 12 // 泳
-      
-      let dictTerms = [
-        "晨泳",
-        "游泳",
-        "游泳池",
-        "泳池游",
-        "泳池",
-        "泳褲",
-        "泳客"
-      ]
-      
       function buildInvertedIndex(sentence) {
         let index = {}
         sentence.split('').forEach((word, i) => {
@@ -38,7 +25,8 @@
         for (let i = 0; i < terms.length; i++) {
           let term = terms[i]
           table.push({
-            term: term
+            term: term,
+            positions: []
           })
         }
         return table
@@ -74,12 +62,11 @@
           // 表示都沒找到
           return false
         }
+        positions.sort()
         return positions
       }
       
       function filterBySequence(anchorPosition, termLength, positions) {
-        positions.sort()
-        
         let positionSequence = []
         let matchedAnchorPosition = false
         for (let i = 0; i < positions.length; i++) {
@@ -142,10 +129,12 @@
         return termsTable
       }
       
-      function searchTermInSentence(sentence, anchorPosition, dictTerms) {
-        let sentenceIndex = buildInvertedIndex(sentence)
-        let termsTable = buildTermsTable(dictTerms)
+      function searchDictionaryByWordInSentence(sentence, anchorPosition, dictTerms) {
+        //轉換輸入資料的格式
+        let sentenceIndex = buildInvertedIndex(sentence) // 將句子轉換成反向索引典
+        let termsTable = buildTermsTable(dictTerms) // 將詞彙轉換成二維詞彙表格
         
+        // 詞彙的每個字都得要出現在句子中
         termsTable = termsTable.filter(item => {
           let positions = filterByOccurs(sentenceIndex, anchorPosition, item.term)
           if (positions === false) {
@@ -155,6 +144,7 @@
           return true
         })
         
+        // 詞彙每個字在句子中的位置，必須是連續出現
         termsTable = termsTable.filter(item => {
           let termlegnth = item.term.length
           let positionSequence = filterBySequence(anchorPosition, termlegnth, item.positions)
@@ -165,6 +155,7 @@
           return true
         })
         
+        // 詞彙每個字在句子中的連續位置所組成的字，必須和詞彙相同
         termsTable = termsTable.filter(item => {
           if (filterTermSequence(sentence, item.positions, item.term) === false) {
             return false
@@ -172,13 +163,36 @@
           return true
         })
         
+        // 詞彙排序
         let sortedFilterTerms = sortTerms(termsTable, anchorPosition)
         
-        document.getElementById('output').innerHTML = sortedFilterTerms.map(o => o.term).join('\n')
+        // 從結果中取出term，重組陣列
+        let outputTerms = sortedFilterTerms.map(o => o.term)
+        
+        return outputTerms
       }
       
+      // -------------------------
+      
+      // 輸入資料
+      let sentence = "清晨很想去游一下，到了游泳池，才發現沒帶泳褲。"
+      let anchorPosition = 12 // 泳
+      
+      let dictTerms = [
+        "晨泳",
+        "游泳",
+        "游泳池",
+        "泳池游",
+        "泳池",
+        "泳褲",
+        "泳客"
+      ]
+      
       // 開始執行
-      searchTermInSentence(sentence, anchorPosition, dictTerms)
+      let sortedFilterTerms = searchDictionaryByWordInSentence(sentence, anchorPosition, dictTerms)
+      
+      // 輸出結果
+      document.getElementById('output').innerHTML = sortedFilterTerms.join('\n')
       
     </script>
   </body>
