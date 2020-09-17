@@ -72,6 +72,11 @@ function filterBySequence($anchorPosition, $termLength, $positions) {
 
     if ($i === 0) {
       $positionSequence[] = $position;
+      
+      if (count($positionSequence) === $termLength 
+           && $matchedAnchorPosition === true) {
+        return $positionSequence;
+      }
       continue;
     }
 

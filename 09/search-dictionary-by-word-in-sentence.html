@@ -77,6 +77,11 @@
           
           if (i === 0) {
             positionSequence.push(position)
+
+            if (positionSequence.length === termLength 
+                 && matchedAnchorPosition === true) {
+              return positionSequence
+            }
             continue
           }
           
@@ -92,11 +97,9 @@
             }
           }
           else {
-            positionSequence = [position]
-            
             matchedAnchorPosition = false
             positionSequence = [position]
-
+            
             if (anchorPosition === position) {
               matchedAnchorPosition = true
             }
