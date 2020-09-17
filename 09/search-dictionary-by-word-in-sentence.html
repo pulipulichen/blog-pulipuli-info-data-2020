@@ -94,7 +94,15 @@
           else {
             positionSequence = [position]
             
-            if (matchedAnchorPosition === true) {
+            matchedAnchorPosition = false
+            positionSequence = [position]
+
+            if (anchorPosition === position) {
+              matchedAnchorPosition = true
+            }
+
+            if (positionSequence.length === termLength 
+                 && matchedAnchorPosition === true) {
               return false
             }
           }

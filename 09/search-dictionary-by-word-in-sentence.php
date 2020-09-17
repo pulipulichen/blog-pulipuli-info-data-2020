@@ -1,6 +1,5 @@
 <?php
 
-
 function buildInvertedIndex($sentence) {
   $index = array();
   for ($i = 0; $i < mb_strlen($sentence, "utf-8"); $i++) {
@@ -66,6 +65,7 @@ function filterBySequence($anchorPosition, $termLength, $positions) {
   
   for ($i = 0; $i < count($positions); $i++) {
     $position = $positions[$i];
+    
     if ($position === $anchorPosition) {
       $matchedAnchorPosition = true;
     }
@@ -87,9 +87,15 @@ function filterBySequence($anchorPosition, $termLength, $positions) {
       }
     }
     else {
+      $matchedAnchorPosition = false;
       $positionSequence = array($position);
-
-      if ($matchedAnchorPosition === true) {
+      
+      if ($anchorPosition === $position) {
+        $matchedAnchorPosition = true;
+      }
+      
+      if (count($positionSequence) === $termLength 
+         && $matchedAnchorPosition === true) {
         return false;
       }
     }
@@ -148,7 +154,6 @@ function searchDictionaryByWordInSentence($sentence, $anchorPosition, $dictTerms
   $tempTermsTable = array();
   for ($i = 0; $i < count($termsTable); $i++) {
     $item = $termsTable[$i];
-    
     $termLength = mb_strlen($item["term"], "utf-8");
     $positionSequence = filterBySequence($anchorPosition, $termLength, $item["positions"]);
     if ($positionSequence === false) {
